@@ -13,6 +13,7 @@ class _HomePageState extends State<HomePage> {
 
   var queryResult;
   TextEditingController _urlStringController;
+  final String token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkOTU5YjE5ZGMzZWQ3ZDEzYzA5MTJiMTA5Y2U1MGQ4MiIsInN1YiI6IjYwYTczZDM3MTQyZWYxMDA0MGYwYmI4ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.85Ck8FPXsw5hgCgngqWSRlifUZuaNz0mWwFNpjZTHlU';
 
   @override
   void initState() {
@@ -30,10 +31,14 @@ class _HomePageState extends State<HomePage> {
   _makeRequest() async{
     var jsonResult;
     try{
-      print(_urlStringController.text);
-      var apiURL = Uri.parse(_urlStringController.text);
-      jsonResult = await http.get(apiURL);
-
+      var apiURL = Uri.parse('https://api.themoviedb.org/3/'+_urlStringController.text);
+      jsonResult = await http.get(
+          apiURL,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ${token}',
+          });
     }
     catch(e){
       print(e);
@@ -47,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            title: Text('HTTP Request Example'),
+            title: Text('TMDB Request Example'),
           ),
           body: Container(
             padding: EdgeInsets.all(16.0),
@@ -66,15 +71,16 @@ class _HomePageState extends State<HomePage> {
                     onPressed: _makeRequest,
                     child: Text('Make Request')
                 ),
-                Center(
-                  child: Text(
-                      (queryResult != null) ? queryResult : 'No Data',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 20,
+                Expanded(
+                  child: Center(
+                    child: Text(
+                        (queryResult != null) ? queryResult : 'No Data',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 20,
+                    ),
                   ),
                 )
-              ],
-            ),
+              ],),
           ),
     ));
   }
